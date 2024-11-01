@@ -34,23 +34,33 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room outside, mcCafe, hOgM, mCDonalds, hall;
       
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
-        
-        // initialise room exits
-        outside.setExits(null, theater, lab, pub);
-        theater.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        lab.setExits(outside, office, null, null);
-        office.setExits(null, null, null, lab);
+        outside = new Room("You found your way out. gz");
+        mcCafe = new Room("In the McCafe, enjoy your coffee");
+        hOgM = new Room("in a H&M store, nice cheap clothes.");
+        mCDonalds = new Room("in McDonalds, enjoy your meal");
+        hall = new Room("In the hall of the mall, so many choices, or not.");
 
-        currentRoom = outside;  // start game outside
+        // initialise room exits
+        /*outside.setExits(null, null, null, null);
+        mcCafe.setExits(null, mCDonalds, null, null);
+        hOgM.setExits(outside, mCDonalds, hall, null);
+        mCDonalds.setExits(null, hall, null, hOgM);
+        hall.setExits(null, null, outside, null);
+        currentRoom = mcCafe;  // start game pub
+
+         */
+
+        mcCafe.setExits("east", mCDonalds);
+        hOgM.setExits("south", hall);
+        hOgM.setExits("east", mCDonalds);
+        mCDonalds.setExits("east", hall);
+        mCDonalds.setExits("west", hOgM);
+        hall.setExits("south", outside);
+        currentRoom = mcCafe;  // start game pub
+        System.out.println();
     }
 
     /**
@@ -68,7 +78,7 @@ public class Game
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
-        System.out.println("Thank you for playing.  Good bye.");
+        System.out.println("You escaped, good job!");
     }
 
     /**
@@ -81,21 +91,26 @@ public class Game
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
         System.out.println();
+        printLocationInfo();
+
+        /*
         System.out.println("You are " + currentRoom.getDescription());
         System.out.print("Exits: ");
         if(currentRoom.northExit != null) {
             System.out.print("north ");
         }
-        if(currentRoom.eastExit != null) {
+        else if(currentRoom.eastExit != null) {
             System.out.print("east ");
         }
-        if(currentRoom.southExit != null) {
+        else if(currentRoom.southExit != null) {
             System.out.print("south ");
         }
-        if(currentRoom.westExit != null) {
+        else if(currentRoom.westExit != null) {
             System.out.print("west ");
         }
         System.out.println();
+
+         */
     }
 
     /**
@@ -157,7 +172,18 @@ public class Game
         String direction = command.getSecondWord();
 
         // Try to leave current room.
-        Room nextRoom = null;
+        Room nextRoom = currentRoom.getExit(direction);
+
+        if(nextRoom == null) {
+            System.out.println("There is no door!!");
+        }
+        else {
+            currentRoom = nextRoom;
+        }
+        printLocationInfo();
+
+
+       /*
         if(direction.equals("north")) {
             nextRoom = currentRoom.northExit;
         }
@@ -192,6 +218,8 @@ public class Game
             }
             System.out.println();
         }
+
+        */
     }
 
     /** 
@@ -209,4 +237,17 @@ public class Game
             return true;  // signal that we want to quit
         }
     }
+
+    private void look()
+    {
+        System.out.println(currentRoom.getLongDescription());
+    }
+
+    private void printLocationInfo() {
+        System.out.println(currentRoom.getLongDescription());
+        System.out.println();
+    }
+
+
+
 }
